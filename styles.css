@@ -47,6 +47,23 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 }
 .screen { position: absolute; inset: 0; z-index: 2; }
 
+.rotate-hint {
+  position: absolute; left: 50%; top: calc(14px + var(--safe-top)); transform: translateX(-50%);
+  z-index: 40; display: none; align-items: center; gap: 8px;
+  padding: 6px 8px 6px 11px; border: 1px solid rgba(245,201,107,.38); border-radius: 6px;
+  background: rgba(9,13,25,.92); color: var(--gold); font-size: 9px; white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4); pointer-events: auto;
+}
+.rotate-hint span { font-size: 16px; line-height: 1; }
+.rotate-hint p { margin: 0; }
+.rotate-hint button {
+  margin-left: 2px; padding: 2px 8px; border: 1px solid rgba(245,201,107,.3); border-radius: 4px;
+  background: rgba(245,201,107,.08); color: var(--gold); font-size: 8px;
+}
+@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
+  .rotate-hint { display: flex; }
+}
+
 /* ---------- title ---------- */
 #title-screen {
   display: flex; align-items: center; justify-content: center;
@@ -439,3 +456,30 @@ h1 span { color: var(--gold); text-shadow: 0 0 28px rgba(245,201,107,.26); }
   .mode-card small { display: none; }
   .menu-foot { margin-top: 10px; padding-top: 8px; }
 }
+
+/* ---------- 移动端横屏 HUD ---------- */
+@media (orientation: landscape) and (max-height: 520px) {
+  #hud { padding: calc(10px + var(--safe-top)) calc(16px + var(--safe-right)) calc(8px + var(--safe-bottom)) calc(16px + var(--safe-left)); }
+  .hud-top { gap: 10px; }
+  #hud-planet { font-size: 16px; }
+  .planet-sub { font-size: 7px; }
+  .trait-row { max-width: 320px; margin-top: 4px; gap: 3px; }
+  .resource-block { max-width: 240px; gap: 4px; }
+  .res-chip { min-width: 52px; padding: 3px 6px; }
+  .res-chip b { font-size: 9px; }
+  .objective-strip { top: calc(66px + var(--safe-top)); width: min(420px, 46vw); padding: 5px 8px 5px 11px; }
+  .objective-strip strong { font-size: 8px; }
+  .event-banner { top: calc(62px + var(--safe-top)); }
+  .status-strip { flex-direction: row; flex-wrap: wrap; gap: 2px 10px; }
+  .hud-bottom { bottom: calc(6px + var(--safe-bottom)); }
+  .joystick { width: 66px; height: 66px; }
+  .joystick-ring { inset: 12px; }
+  .joystick-knob { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+  .action-btn { min-height: 33px; padding: 0 9px; font-size: 8px; }
+  .action-btn kbd { font-size: 6px; }
+  .interaction-prompt { bottom: calc(84px + var(--safe-bottom)); padding: 5px 8px; font-size: 8px; }
+  .collect-progress { bottom: calc(108px + var(--safe-bottom)); }
+  .toasts { top: 40%; }
+  .labels { display: none; }
+}
+

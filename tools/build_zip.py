@@ -15,6 +15,7 @@ files = [
     "assets/bgm-colony.wav",
     "screenshots/title.png",
     "screenshots/gameplay.png",
+    "screenshots/landscape.png",
     "screenshots/landing.png",
     "screenshots/construction.png",
     "screenshots/strategy.png",

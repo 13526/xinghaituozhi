@@ -3688,6 +3688,16 @@
         handleLinePick(e.clientX, e.clientY);
       }
     });
+    const rotateHint = $('rotate-hint');
+    const rotateDismiss = $('rotate-dismiss');
+    if (rotateHint && rotateDismiss) {
+      const KEY = 'dushi-64-rotate-hint-dismissed.v1';
+      try { if (localStorage.getItem(KEY) === '1') rotateHint.style.display = 'none'; } catch (e) {}
+      rotateDismiss.addEventListener('click', () => {
+        rotateHint.style.display = 'none';
+        try { localStorage.setItem(KEY, '1'); } catch (e) {}
+      });
+    }
     bindJoystick();
     initBgm();
     updateSoundButtons();
