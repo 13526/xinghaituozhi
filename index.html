@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#060812">
+  <meta name="description" content="星海拓殖：清华大学笃实书院64班特色3D星球基地经营小游戏。探索地外星球，建设基地，发展工业，研发跨星系飞行器。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="星海拓殖 · 64班">
+  <meta property="og:title" content="星海拓殖 · 笃实书院64班">
+  <meta property="og:description" content="探索地外星球，建立基地，发展工业，研发跨星系飞行器。">
+  <title>星海拓殖 · 笃实书院64班</title>
+  <link rel="icon" type="image/png" href="assets/class64-badge.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene" aria-label="星球探索 3D 场景"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <section id="title-screen" class="screen">
+      <div class="menu-card">
+        <div class="menu-top">
+          <span class="menu-brand"><i>THU</i> 笃实书院 · 64班</span>
+          <span class="menu-build">PLANETARY FRONTIER / 01</span>
+        </div>
+        <div class="hero-lockup">
+          <div class="hero-badge"><img src="assets/class64-badge.png" alt="笃实书院64班班徽"></div>
+          <div class="hero-copy">
+            <p class="kicker">DUSHI 64 · 星球拓殖计划</p>
+            <h1>星海<span>拓殖</span></h1>
+            <p class="hero-sub">探索 · 建设 · 研发 · 远航</p>
+          </div>
+        </div>
+        <p class="lede">驾驶勘探车穿越陌生地表，按照星球条件布设基地，发展工业，研发跨星系飞行器。每一颗星球，都会留下属于64班的纪念章。</p>
+        <div class="mode-grid">
+          <button class="mode-card" data-mode="campaign">
+            <span class="mode-index">01</span>
+            <strong>主线远征</strong>
+            <em>三颗星球 · 完整航程</em>
+            <small>赤砂星 → 霜环星 → 苍潮星</small>
+          </button>
+          <button class="mode-card" data-mode="endless">
+            <span class="mode-index">∞</span>
+            <strong>无尽拓殖</strong>
+            <em>程序生成 · 持续深入</em>
+            <small>难度随航程递增，收集更多纪念章</small>
+          </button>
+        </div>
+        <div class="menu-actions">
+          <button id="btn-medals" class="ghost-btn">纪念章墙 <b id="medal-count">0</b></button>
+          <button id="btn-help" class="ghost-btn">玩法说明</button>
+          <button id="btn-sound" class="ghost-btn sound-btn">♪ 音乐：开</button>
+        </div>
+        <div class="menu-foot">
+          <span>WASD / 方向键移动 · E 互动 · B 建造 · R 研发</span>
+          <span>手机：左侧摇杆 · 右侧按钮</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="hud" class="screen" hidden>
+      <header class="hud-top">
+        <div class="planet-block">
+          <div class="planet-line"><span id="hud-planet">赤砂星</span><span id="hud-cycle" class="cycle-pill">航段 01</span><span class="mini-pill">64班</span></div>
+          <div id="hud-sub" class="planet-sub">铁锈荒漠 · 低重力</div>
+          <div id="hud-traits" class="trait-row"></div>
+        </div>
+        <div class="resource-block">
+          <div class="res-chip metal"><span class="res-icon"></span><div><small>金属</small><b id="res-metal">0</b></div></div>
+          <div class="res-chip ice"><span class="res-icon"></span><div><small>冰</small><b id="res-ice">0</b></div></div>
+          <div class="res-chip crystal"><span class="res-icon"></span><div><small>晶矿</small><b id="res-crystal">0</b></div></div>
+          <div class="res-chip power"><span class="res-icon"></span><div><small>电力</small><b id="res-power">4 / 0</b></div></div>
+        </div>
+      </header>
+
+      <div id="event-banner" class="event-banner" hidden></div>
+
+      <div class="objective-strip">
+        <div>
+          <small>当前目标</small>
+          <strong id="objective-text">探索地表，建立第一座采掘阵列</strong>
+        </div>
+        <button id="btn-sound-hud" class="mini-btn sound-mini" aria-label="开关背景音乐">♪</button>
+        <button id="btn-pause" class="mini-btn" aria-label="帮助">?</button>
+      </div>
+
+      <div id="labels" class="labels" aria-hidden="true"></div>
+
+      <div class="hud-bottom">
+        <div class="movement-side">
+          <div id="joystick" class="joystick" aria-label="移动摇杆">
+            <span class="joystick-ring"></span>
+            <span id="joystick-knob" class="joystick-knob"></span>
+          </div>
+          <div class="status-strip">
+            <span id="status-mode">主线远征</span>
+            <span id="status-power" class="status-good">电力稳定</span>
+            <span id="status-network">产线 0</span>
+            <span id="status-crew">施工队 0 / 2</span>
+          </div>
+        </div>
+        <div class="action-side">
+          <button id="btn-interact" class="action-btn interact" hidden>采集 <kbd>E</kbd></button>
+          <button id="btn-build" class="action-btn">基地建造 <kbd>B</kbd></button>
+          <button id="btn-research" class="action-btn primary">火箭研发 <kbd>R</kbd></button>
+          <button id="btn-view" class="action-btn">星球俯瞰 <kbd>V</kbd></button>
+          <button id="btn-underground" class="action-btn">地下视角 <kbd>U</kbd></button>
+          <button id="btn-slot" class="action-btn">新增地块 <kbd>N</kbd></button>
+          <button id="btn-line" class="action-btn">改线 <kbd>L</kbd></button>
+          <button id="btn-settle" class="action-btn">结算离场 <kbd>Q</kbd></button>
+        </div>
+      </div>
+
+      <div id="interaction-prompt" class="interaction-prompt" hidden>
+        <span id="prompt-icon">◆</span>
+        <span id="prompt-text">靠近资源点</span>
+        <kbd>E</kbd>
+      </div>
+
+      <div id="collect-progress" class="collect-progress" hidden><i id="collect-fill"></i></div>
+
+      <div id="toasts" class="toasts" aria-live="polite"></div>
+    </section>
+
+    <section id="landing-screen" class="landing-screen" hidden>
+      <div class="landing-top">
+        <span>DUSHI 64 / DESCENT SEQUENCE</span>
+        <span id="landing-phase">APPROACH</span>
+      </div>
+      <div class="landing-panel">
+        <span class="landing-kicker">PLANETARY INSERTION</span>
+        <h2 id="landing-planet">赤砂星</h2>
+        <p id="landing-status">进入大气层 · 反推点火</p>
+        <div class="landing-track"><i id="landing-progress"></i></div>
+        <div class="landing-meta"><span>勘探车 · 待释放</span><span>64班拓殖队</span></div>
+      </div>
+      <button id="landing-skip" class="landing-skip">跳过过场</button>
+    </section>
+
+    <div id="modal" class="modal" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-head">
+          <div>
+            <span id="modal-kicker" class="modal-kicker">BASE / CONSTRUCTION</span>
+            <h2 id="modal-title">基地建造</h2>
+          </div>
+          <button id="modal-close" class="close-btn" aria-label="关闭">×</button>
+        </div>
+        <div id="modal-body" class="modal-body"></div>
+      </div>
+    </div>
+
+    <div id="complete-overlay" class="complete-overlay" hidden>
+      <div class="complete-card">
+        <span class="complete-kicker">PLANET SURVEY COMPLETE</span>
+        <h2 id="complete-title">星球勘探完成</h2>
+        <p id="complete-sub" class="complete-sub">赤砂星 · 基地已稳定运行</p>
+        <div id="complete-medal" class="complete-medal"></div>
+        <div id="complete-stats" class="complete-stats"></div>
+        <button id="btn-next-planet" class="launch-btn">前往下一颗星球 <span>→</span></button>
+      </div>
+    </div>
+
+    <div id="webgl-error" class="webgl-error" hidden>
+      <div>
+        <h2>需要 WebGL 支持</h2>
+        <p>当前浏览器无法创建 3D 场景，请更新浏览器或开启硬件加速后再试。</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
